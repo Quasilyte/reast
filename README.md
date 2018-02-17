@@ -188,9 +188,27 @@ Removes all `ast.StmtExpr` with `ast.AssignStmt`.
 // Before:
 f1(x)
 f2()
+<- c
 // After:
 _ = f1(x)
 _, _ = f2()
+_ = <- c
 ```
 
 **Reason**: merging of two functionally identical forms into one.
+
+## TODO
+
+There are rules that make some constructions impossible to
+express syntax errors.
+
+For example, if `x, y := f()` is re-written into `var` and `=`,
+it can no longer be used where **simple statement** is expected.
+Most statements that allow (optional) initializer statement
+fall into this category. 
+It is a real issue that should be solved.
+
+TODO list for rules:
+* For loops.
+* Switch statement.
+* If statement.
