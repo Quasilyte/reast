@@ -205,8 +205,8 @@ express syntax errors.
 For example, if `x, y := f()` is re-written into `var` and `=`,
 it can no longer be used where **simple statement** is expected.
 Most statements that allow (optional) initializer statement
-fall into this category. 
-It is a real issue that should be solved.
+fall into this category.  
+It is an [issue](https://github.com/Quasilyte/reast/issues/1) that should be solved.
 
 TODO list for rules:
 * For loops.
