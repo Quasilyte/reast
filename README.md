@@ -180,7 +180,7 @@ y, err = f3()
 **Reason**: the `:=` has much type-based and scope-based logic.
 It can be replaced with `var` and `=` completely without any loss.
 
-## Rule 7. Explicit value discard.
+## Rule 7. Explicit value discard
 
 Removes all `ast.StmtExpr` with `ast.AssignStmt`.
 
@@ -197,6 +197,71 @@ _ = <- c
 
 **Reason**: merging of two functionally identical forms into one.
 
+## Rule 8. Extract init statement
+
+Moves init statement outside.
+Introduces a new block to preserve proper lexical scoping context.
+
+```go
+// Before:
+if err := f(); err != nil {
+    // Body.
+}
+
+// After:
+{
+    var err error = f()
+    if err != nil {
+        // Body.
+    }
+}
+```
+
+This works for `if`, `switch`, `for` statements in a same way.
+
+**Reason**: see [issue#1](https://github.com/Quasilyte/reast/issues/1).
+
+## Rule 9. Inject `for` post statement
+
+Combined with other rules, it makes only while-like `for` loop
+form possible (`range` loops are a different thing).
+
+```go
+// Before:
+for i := 0; i < len(xs); i++ {
+    // Body.
+}
+
+// After:
+{
+    var i int = 0
+    for i < len(xs) {
+        // Body.
+        i++
+    }
+}
+```
+
+**Reason**: see [issue#1](https://github.com/Quasilyte/reast/issues/1).
+
+## Rule 10. Explicit `true` in `SwitchStmt`
+
+With this, switch statement tag expression is never `nil`.
+
+```go
+// Before:
+switch {
+    // Cases clauses.
+}
+
+// After:
+switch true {
+    // Case clauses.
+}
+```
+
+**Reason**: merging of two functionally identical forms into one.
+
 ## TODO
 
 There are rules that make some constructions impossible to
@@ -205,10 +270,9 @@ express syntax errors.
 For example, if `x, y := f()` is re-written into `var` and `=`,
 it can no longer be used where **simple statement** is expected.
 Most statements that allow (optional) initializer statement
-fall into this category.  
-It is an [issue](https://github.com/Quasilyte/reast/issues/1) that should be solved.
+fall into this category. 
+It is a real issue that should be solved.
 
 TODO list for rules:
-* For loops.
-* Switch statement.
-* If statement.
+* Range loops.
+* Misc simplifications.
