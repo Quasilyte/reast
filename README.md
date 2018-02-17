@@ -83,6 +83,8 @@ x = y
 y = tmp
 ```
 
+The "comma, ok" assignments remain unchanged.
+
 **Reason**: makes multi-value context dedicated to tuple assignment.
 
 ## Rule 3. Explicit type in var declarations
@@ -175,6 +177,21 @@ var z T3 = f2()
 
 var err error = nil
 y, err = f3()
+```
+
+"comma, ok" is affected, too:
+
+```go
+// Before:
+x, ok := m[k1]
+y, ok := m[k2]
+
+// After:
+var x T = T{}
+var ok bool
+x, ok = m[k1]
+var y T = T{}
+y, ok = m[k2]
 ```
 
 **Reason**: the `:=` has much type-based and scope-based logic.
