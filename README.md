@@ -78,7 +78,7 @@ x, y = y, x
 // After:
 x = a
 y = b
-tmp := x // Exact tmp name can vary
+var tmp = x // Exact tmp name can vary
 x = y
 y = tmp
 ```
