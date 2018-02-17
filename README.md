@@ -4,13 +4,12 @@ Re-AST: rewrite Go AST to functionally equivalent, but syntactically simpler for
 
 ## Go AST simplifications rules
 
-Problem: `go/ast` is not very convenient for certain kinds of
-code manipulations. The `SSA`-like formats can be too low-level
+Problem: `go/ast` is not very convenient for certain kinds of code manipulations.  
+The `SSA`-like formats can be too low-level
 and cumbersome to work with if it's advantages are not required.
 
-This file describes how Go AST can be re-written in a way
-that respects evaluation order, semantics and functional
-behaviour, yet is simpler to process.
+This file describes how Go AST can be re-written in a way that respects evaluation order,  
+semantics and functional behaviour, yet is simpler to process.
 
 One of the most flexible construction, assignment and it's
 forms (like `var` declaration + initilization) is re-written
