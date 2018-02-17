@@ -275,5 +275,6 @@ It is a real issue that should be solved.
 
 TODO list for rules:
 * Range loops. See [issue#2](https://github.com/Quasilyte/reast/issues/2).
+* Comma, ok idiom. See [issue#3](https://github.com/Quasilyte/reast/issues/3).
 * Misc simplifications.
 * Complete program translation examples.
