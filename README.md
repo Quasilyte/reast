@@ -274,5 +274,6 @@ fall into this category.
 It is a real issue that should be solved.
 
 TODO list for rules:
-* Range loops.
+* Range loops. See [issue#2](https://github.com/Quasilyte/reast/issues/2).
 * Misc simplifications.
+* Complete program translation examples.
