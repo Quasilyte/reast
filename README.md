@@ -65,12 +65,33 @@ s1.x = s2.x       // Before
 
 **Reason**: makes selector expression and index expression less ambiguous.
 
-## Rule 2. Explicit type in var declarations
+## Rule 2. Split assign statements
+
+When there is no multi-value context (no tuple assignment),
+split parallel assignment into a series of simpler assignments.
+
+```go
+// Before:
+x, y = a, b
+x, y = y, x
+
+// After:
+x = a
+y = b
+tmp := x // Exact tmp name can vary
+x = y
+y = tmp
+```
+
+**Reason**: makes multi-value context dedicated to tuple assignment.
+
+## Rule 3. Explicit type in var declarations
 
 ```go
 // Before:
 var x = 10
 var y = new([]int)
+
 // After:
 var x int = 10
 var y *[]int = new([]int)
@@ -78,7 +99,7 @@ var y *[]int = new([]int)
 
 **Reason**: makes `var` declarations more uniform.
 
-## Rule 3. Explicit default initialization
+## Rule 4. Explicit default initialization
 
 With this, `var` declaration always has initializer expression.
 
@@ -87,6 +108,7 @@ With this, `var` declaration always has initializer expression.
 var x int
 var y T
 var z *T
+
 // After:
 var x int = 0
 var y T = T{}
@@ -95,13 +117,14 @@ var z *T = nil
 
 **Reason**: makes `var` declarations more uniform.
 
-## Rule 4. Split declarations
+## Rule 5. Split `var` declarations
 
 Makes each `var` declaration introduce exactly one name.
 
 ```go
 // Before:
 var x, y T = T{}, T{}
+
 // After:
 var x T = T{}
 var y T = T{}
@@ -115,26 +138,59 @@ var (
     x, y int = 1, 2
     z T
 )
+
 // After:
 var x int = 1
 var y int = 2
 var z T = T{}
 ```
 
-**Reason**: makes multi-value context, where `len(lhs)!=len(rhs)`, 
-applicable for tuple assignments only.
+**Reason**: along with rules below, makes multi-value context non-issue for `var` declaration.
 
-## Rule 5. Explicit value discard.
+## Rule 6. Replace `:=` assignments (short variable declaration)
+
+This rule could be break down to these parts:
+1. Replace simple `:=` statements with `var`.
+2. Replace simple `:=` statements that re-declare names with `=`.
+3. Split multi-assignment into `var` declaration plus `=`.
+
+```go
+func f1() (T1, T2)
+func f2() T3
+func f3() (T4, error)
+
+// Before:
+x, y := f1()
+
+z := f2()
+
+y, err := f3() // Note: y re-declared.
+
+// After:
+var x T1 = T1{}
+var y T2 = T2{}
+x, y = f1()
+
+var z T3 = f2()
+
+var err error = nil
+y, err = f3()
+```
+
+**Reason**: the `:=` has much type-based and scope-based logic.
+It can be replaced with `var` and `=` completely without any loss.
+
+## Rule 7. Explicit value discard.
 
 Removes all `ast.StmtExpr` with `ast.AssignStmt`.
 
 ```go
 // Before:
-foo(x)
-bar()
+f1(x)
+f2()
 // After:
-_ = foo(x)
-_, _ = bar()
+_ = f1(x)
+_, _ = f2()
 ```
 
 **Reason**: merging of two functionally identical forms into one.
